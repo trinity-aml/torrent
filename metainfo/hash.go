@@ -2,6 +2,7 @@ package metainfo
 
 import (
 	"crypto/sha1"
+	"encoding"
 	"encoding/hex"
 	"fmt"
 )
@@ -56,3 +57,16 @@ func HashBytes(b []byte) (ret Hash) {
 	copy(ret[:], hasher.Sum(nil))
 	return
 }
+
+var (
+	_ encoding.TextUnmarshaler = (*Hash)(nil)
+	_ encoding.TextMarshaler   = Hash{}
+)
+
+func (h *Hash) UnmarshalText(b []byte) error {
+	return h.FromHexString(string(b))
+}
+func (h Hash) MarshalText() (text []byte, err error) {
+	return []byte(h.HexString()), nil
+}
+
