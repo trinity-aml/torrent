@@ -1,5 +1,3 @@
-// +build !cgo disable_libutp
-
 package torrent
 
 import (
