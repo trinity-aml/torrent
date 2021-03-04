@@ -1054,14 +1054,6 @@ func (t *Torrent) putPieceInclination(pi []int) {
 	pieceInclinationsPut.Add(1)
 }
 
-func (t *Torrent) UpdatePieceCompletion(i int){
-	t.updatePieceCompletion(pieceIndex(i))
-	p := &t.pieces[i]
-	if !p.storageCompletionOk {
-		t.queuePieceCheck(pieceIndex(i))
-	}
-}
-
 func (t *Torrent) updatePieceCompletion(piece pieceIndex) bool {
 	pcu := t.pieceCompleteUncached(piece)
 	p := &t.pieces[piece]
