@@ -195,7 +195,7 @@ func NewClient(cfg *ClientConfig) (cl *Client, err error) {
 	cl.extensionBytes = defaultPeerExtensionBytes()
 	cl.event.L = cl.locker()
 	storageImpl := cfg.DefaultStorage
-	
+
 	cl.defaultStorage = storage.NewClient(storageImpl)
 	if cfg.IPBlocklist != nil {
 		cl.ipBlockList = cfg.IPBlocklist
@@ -305,6 +305,7 @@ func (cl *Client) newDhtServer(conn net.PacketConn) (s *dht.Server, err error) {
 		}(),
 		StartingNodes:      cl.config.DhtStartingNodes,
 		ConnectionTracking: cl.config.ConnTracker,
+		OnQuery:            cl.config.DHTOnQuery,
 	}
 	s, err = dht.NewServer(&cfg)
 	if err == nil {

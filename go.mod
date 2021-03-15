@@ -1,4 +1,4 @@
-module github.com/yourok/torrent
+module github.com/anacrolix/torrent
 
 go 1.16
 
@@ -9,10 +9,8 @@ require (
 	github.com/anacrolix/envpprof v0.0.0-20180404065416-323002cec2fa
 	github.com/anacrolix/log v0.2.0
 	github.com/anacrolix/missinggo v1.1.0
-	github.com/anacrolix/mmsg v0.0.0-20180808012353-5adb2c1127c0 // indirect
 	github.com/anacrolix/sync v0.0.0-20180808010631-44578de4e778
 	github.com/anacrolix/tagflag v0.0.0-20180803105420-3a8ff5428f76
-	github.com/anacrolix/torrent v1.0.1
 	github.com/anacrolix/utp v0.0.0-20180219060659-9e0e1d1d0572
 	github.com/bradfitz/iter v0.0.0-20190303215204-33e6a9893b0c
 	github.com/davecgh/go-spew v1.1.1
@@ -23,10 +21,6 @@ require (
 	github.com/glycerine/goconvey v0.0.0-20190315024820-982ee783a72e // indirect
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c
 	github.com/gopherjs/gopherjs v0.0.0-20190309154008-847fc94819f9 // indirect
-	github.com/gosuri/uiprogress v0.0.0-20170224063937-d0567a9d84a1
-	github.com/jessevdk/go-flags v1.4.0
-	github.com/mattn/go-isatty v0.0.7 // indirect
-	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/pkg/errors v0.8.1
 	github.com/smartystreets/assertions v0.0.0-20190215210624-980c5ac6f3ac // indirect
 	github.com/stretchr/testify v1.3.0
