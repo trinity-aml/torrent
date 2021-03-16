@@ -5,12 +5,9 @@ go 1.16
 require (
 	github.com/RoaringBitmap/roaring v0.4.17 // indirect
 	github.com/anacrolix/dht v1.0.1
-	github.com/anacrolix/dht/v2 v2.0.1
-	github.com/anacrolix/envpprof v0.0.0-20180404065416-323002cec2fa
 	github.com/anacrolix/log v0.2.0
 	github.com/anacrolix/missinggo v1.1.0
 	github.com/anacrolix/sync v0.0.0-20180808010631-44578de4e778
-	github.com/anacrolix/tagflag v0.0.0-20180803105420-3a8ff5428f76
 	github.com/anacrolix/utp v0.0.0-20180219060659-9e0e1d1d0572
 	github.com/bradfitz/iter v0.0.0-20190303215204-33e6a9893b0c
 	github.com/davecgh/go-spew v1.1.1
