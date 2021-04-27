@@ -59,6 +59,7 @@ func (ipl *IPList) Lookup(ip net.IP) (r Range, ok bool) {
 	// memory for IPv4 addresses?
 	v4 := ip.To4()
 	if v4 != nil {
+		minifyIP(&v4)
 		r, ok = ipl.lookup(v4)
 		if ok {
 			return
