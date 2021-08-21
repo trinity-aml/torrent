@@ -15,7 +15,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/anacrolix/dht"
+	"github.com/anacrolix/dht/v2"
 	"github.com/anacrolix/log"
 	"github.com/anacrolix/missinggo"
 	"github.com/anacrolix/missinggo/bitmap"
@@ -41,7 +41,7 @@ type Torrent struct {
 	// alignment. See #262.
 	stats  ConnStats
 	cl     *Client
-	logger *log.Logger
+	logger log.Logger
 
 	networkingEnabled bool
 
@@ -996,7 +996,7 @@ func (t *Torrent) pendRequest(req request) {
 }
 
 func (t *Torrent) pieceCompletionChanged(piece pieceIndex) {
-	log.Call().Add("piece", piece).AddValue(debugLogValue).Log(t.logger)
+	// log.Call().Add("piece", piece).AddValue(debugLogValue).Log(t.logger)
 	t.cl.event.Broadcast()
 	if t.pieceComplete(piece) {
 		t.onPieceCompleted(piece)
@@ -1058,7 +1058,7 @@ func (t *Torrent) updatePieceCompletion(piece pieceIndex) bool {
 	pcu := t.pieceCompleteUncached(piece)
 	p := &t.pieces[piece]
 	changed := t.completedPieces.Get(bitmap.BitIndex(piece)) != pcu.Complete || p.storageCompletionOk != pcu.Ok
-	log.Fmsg("piece %d completion: %v", piece, pcu.Ok).AddValue(debugLogValue).Log(t.logger)
+	// log.Fmsg("piece %d completion: %v", piece, pcu.Ok).AddValue(debugLogValue).Log(t.logger)
 	p.storageCompletionOk = pcu.Ok
 	t.completedPieces.Set(bitmap.BitIndex(piece), pcu.Complete)
 	t.tickleReaders()
@@ -1339,21 +1339,54 @@ func (t *Torrent) consumeDhtAnnouncePeers(pvs <-chan dht.PeersValues) {
 	}
 }
 
-func (t *Torrent) announceToDht(impliedPort bool, s *dht.Server) error {
-	ps, err := s.Announce(t.infoHash, t.cl.incomingPeerPort(), impliedPort)
+//func (t *Torrent) announceToDht(impliedPort bool, s DhtServer) error {  
+//	ps, err := s.Announce(t.infoHash, t.cl.incomingPeerPort(), impliedPort)  
+//	if err != nil {  
+//		return err  
+//	}  
+//	go func() {  
+//		t.consumeDhtAnnouncePeers(ps.Peers)  
+//	}() // TODO: CHECK THIS  
+//	select {  
+//	  case <-t.closed.LockedChan(t.cl.locker()):  
+//	  case <-time.After(5 * time.Minute):  
+//	}  
+//	ps.Close()  
+//	return nil  
+//}  
+
+
+// Announce using the provided DHT server. Peers are consumed automatically. done is closed when the
+// announce ends. stop will force the announce to end.
+func (t *Torrent) AnnounceToDht(s DhtServer) (done <-chan struct{}, stop func(), err error) {
+	ps, err := s.Announce(t.infoHash, t.cl.incomingPeerPort(), true)
+	if err != nil {
+		return
+	}
+	_done := make(chan struct{})
+	done = _done
+	stop = ps.Close
+	go func() {
+		t.consumeDhtAnnouncePeers(ps.Peers())
+		close(_done)
+	}()
+	return
+}
+
+func (t *Torrent) announceToDht(s DhtServer) error {
+	_, stop, err := t.AnnounceToDht(s)
 	if err != nil {
 		return err
 	}
-	go t.consumeDhtAnnouncePeers(ps.Peers)
 	select {
 	case <-t.closed.LockedChan(t.cl.locker()):
 	case <-time.After(5 * time.Minute):
 	}
-	ps.Close()
+	stop()
 	return nil
 }
 
-func (t *Torrent) dhtAnnouncer(s *dht.Server) {
+func (t *Torrent) dhtAnnouncer(s DhtServer) {
 	cl := t.cl
 	for {
 		select {
@@ -1364,9 +1397,10 @@ func (t *Torrent) dhtAnnouncer(s *dht.Server) {
 		cl.lock()
 		t.numDHTAnnounces++
 		cl.unlock()
-		err := t.announceToDht(true, s)
+		//err := t.announceToDht(true, s)
+		err := t.announceToDht(s)
 		if err != nil {
-			t.logger.Printf("error announcing %q to DHT: %s", t, err)
+			t.logger.WithDefaultLevel(log.Warning).Printf("error announcing %q to DHT: %s", t, err)
 		}
 	}
 }
@@ -1504,7 +1538,7 @@ func (t *Torrent) SetMaxEstablishedConns(max int) (oldMax int) {
 }
 
 func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
-	log.Fmsg("hashed piece %d", piece).Add("piece", piece).Add("passed", correct).AddValue(debugLogValue).Log(t.logger)
+	// log.Fmsg("hashed piece %d", piece).Add("piece", piece).Add("passed", correct).AddValue(debugLogValue).Log(t.logger)
 	if t.closed.IsSet() {
 		return
 	}

@@ -13,8 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/anacrolix/dht"
-	"github.com/anacrolix/log"
+//	"github.com/anacrolix/log"
 	"github.com/anacrolix/missinggo"
 	"github.com/anacrolix/missinggo/bitmap"
 	"github.com/anacrolix/missinggo/iter"
@@ -1158,17 +1157,17 @@ func (c *connection) mainReadLoop() (err error) {
 			if msg.Port != 0 {
 				pingAddr.Port = int(msg.Port)
 			}
-			cl.eachDhtServer(func(s *dht.Server) {
-				go s.Ping(&pingAddr, nil)
+			cl.eachDhtServer(func(s DhtServer) {
+				go s.Ping(&pingAddr)
 			})
 		case pp.AllowedFast:
 			torrent.Add("allowed fasts received", 1)
-			log.Fmsg("peer allowed fast: %d", msg.Index).AddValues(c, debugLogValue).Log(c.t.logger)
+			//log.Fmsg("peer allowed fast: %d", msg.Index).AddValues(c, debugLogValue).Log(c.t.logger)
 			c.peerAllowedFast.Add(int(msg.Index))
 			c.updateRequests()
 		case pp.Suggest:
 			torrent.Add("suggests received", 1)
-			log.Fmsg("peer suggested piece %d", msg.Index).AddValues(c, msg.Index, debugLogValue).Log(c.t.logger)
+			//log.Fmsg("peer suggested piece %d", msg.Index).AddValues(c, msg.Index, debugLogValue).Log(c.t.logger)
 			c.updateRequests()
 		default:
 			err = fmt.Errorf("received unknown message type: %#v", msg.Type)
@@ -1428,7 +1427,7 @@ another:
 						break another
 					}
 				}
-				log.Str("error sending chunk to peer").AddValues(c, r, err).Log(c.t.logger)
+				//log.Str("error sending chunk to peer").AddValues(c, r, err).Log(c.t.logger)
 				// If we failed to send a chunk, choke the peer to ensure they
 				// flush all their requests. We've probably dropped a piece,
 				// but there's no way to communicate this to the peer. If they

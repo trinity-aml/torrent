@@ -6,8 +6,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/anacrolix/dht"
-	"github.com/anacrolix/dht/krpc"
+	"github.com/anacrolix/dht/v2"
+	"github.com/anacrolix/dht/v2/krpc"
+	"github.com/anacrolix/log"
 	"github.com/anacrolix/missinggo"
 	"github.com/anacrolix/missinggo/conntrack"
 	"github.com/anacrolix/missinggo/expect"
@@ -23,19 +24,23 @@ type ClientConfig struct {
 	// Store torrent file data in this directory unless .DefaultStorage is
 	// specified.
 	DataDir string `long:"data-dir" description:"directory to store downloaded torrent data"`
-	// The address to listen for new uTP and TCP bittorrent protocol
-	// connections. DHT shares a UDP socket with uTP unless configured
-	// otherwise.
+	// The address to listen for new uTP and TCP BitTorrent protocol connections. DHT shares a UDP
+	// socket with uTP unless configured otherwise.
 	ListenHost              func(network string) string
 	ListenPort              int
 	NoDefaultPortForwarding bool
+	UpnpID                  string
 	// Don't announce to trackers. This only leaves DHT to discover peers.
 	DisableTrackers bool `long:"disable-trackers"`
 	DisablePEX      bool `long:"disable-pex"`
 
 	// Don't create a DHT.
 	NoDHT            bool `long:"disable-dht"`
-	DhtStartingNodes dht.StartingNodesGetter
+	DhtStartingNodes func(network string) dht.StartingNodesGetter
+	// Called for each anacrolix/dht Server created for the Client.
+	ConfigureAnacrolixDhtServer       func(*dht.ServerConfig)
+	PeriodicallyAnnounceTorrentsToDht bool
+
 	// Never send chunks to peers.
 	NoUpload bool `long:"no-upload"`
 	// Disable uploading even when it isn't fair.
@@ -80,6 +85,7 @@ type ClientConfig struct {
 	DisableIPv4Peers bool
 	// Perform logging and any other behaviour that will help debug.
 	Debug bool `help:"enable debugging"`
+	Logger log.Logger
 
 	// HTTPProxy defines proxy for HTTP requests.
 	// Format: func(*Request) (*url.URL, error),
@@ -128,6 +134,7 @@ type ClientConfig struct {
 
 	// OnQuery hook func
 	DHTOnQuery func(query *krpc.Msg, source net.Addr) (propagate bool)
+
 }
 
 func (cfg *ClientConfig) SetListenAddr(addr string) *ClientConfig {
@@ -150,8 +157,10 @@ func NewDefaultClientConfig() *ClientConfig {
 		TorrentPeersHighWater:          500,
 		TorrentPeersLowWater:           50,
 		HandshakesTimeout:              4 * time.Second,
-		DhtStartingNodes:               dht.GlobalBootstrapAddrs,
-		ListenHost:                     func(string) string { return "" },
+		DhtStartingNodes: func(network string) dht.StartingNodesGetter {
+			return func() ([]dht.Addr, error) { return dht.GlobalBootstrapAddrs(network) }
+		},
+		PeriodicallyAnnounceTorrentsToDht: true,		ListenHost:                     func(string) string { return "" },
 		UploadRateLimiter:              unlimited,
 		DownloadRateLimiter:            unlimited,
 		ConnTracker:                    conntrack.NewInstance(),
