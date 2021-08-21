@@ -1034,9 +1034,6 @@ func (t *Torrent) openNewConns() {
 		if len(t.halfOpen) >= t.maxHalfOpen() {
 			return
 		}
-		if len(t.cl.dialers) == 0 {
-			return
-		}
 		if t.cl.numHalfOpen >= t.cl.config.TotalHalfOpenConns {
 			return
 		}

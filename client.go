@@ -463,7 +463,7 @@ func (cl *Client) incomingConnection(nc net.Conn) {
 	defer func() {
 		cl.lock()
 		defer cl.unlock()
-		c.close()
+		c.Close()
 	}()
 	c.Discovery = peerSourceIncoming
 	cl.runReceivedConn(c)
