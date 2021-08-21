@@ -71,6 +71,7 @@ type Client struct {
 
 	acceptLimiter   map[ipStr]int
 	dialRateLimiter *rate.Limiter
+	numHalfOpen     int
 }
 
 type ipStr string
@@ -459,6 +460,11 @@ func (cl *Client) incomingConnection(nc net.Conn) {
 		tc.SetLinger(0)
 	}
 	c := cl.newConnection(nc, false, missinggo.IpPortFromNetAddr(nc.RemoteAddr()), nc.RemoteAddr().Network())
+	defer func() {
+		cl.lock()
+		defer cl.unlock()
+		c.close()
+	}()
 	c.Discovery = peerSourceIncoming
 	cl.runReceivedConn(c)
 }
@@ -593,7 +599,10 @@ func (cl *Client) noLongerHalfOpen(t *Torrent, addr string) {
 		panic("invariant broken")
 	}
 	delete(t.halfOpen, addr)
-	t.openNewConns()
+	cl.numHalfOpen--
+	for _, t := range cl.torrents {
+		t.openNewConns()
+	}
 }
 
 // Performs initiator handshakes and returns a connection. Returns nil
@@ -1045,7 +1054,9 @@ func (cl *Client) AddTorrentInfoHashWithStorage(infoHash metainfo.Hash, specStor
 
 	t = cl.newTorrent(infoHash, specStorage)
 	cl.eachDhtServer(func(s DhtServer) {
-		go t.dhtAnnouncer(s)
+		if cl.config.PeriodicallyAnnounceTorrentsToDht {
+			go t.dhtAnnouncer(s)
+		}
 	})
 	cl.torrents[infoHash] = t
 	cl.clearAcceptLimits()
@@ -1186,6 +1197,7 @@ func (cl *Client) AddDHTNodes(nodes []string) {
 }
 
 func (cl *Client) banPeerIP(ip net.IP) {
+	cl.logger.Printf("banning ip %v", ip)
 	if cl.badPeerIPs == nil {
 		cl.badPeerIPs = make(map[string]struct{})
 	}

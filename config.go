@@ -110,6 +110,7 @@ type ClientConfig struct {
 	MinDialTimeout             time.Duration
 	EstablishedConnsPerTorrent int
 	HalfOpenConnsPerTorrent    int
+	TotalHalfOpenConns         int
 	// Maximum number of peer addresses in reserve.
 	TorrentPeersHighWater int
 	// Minumum number of peers before effort is made to obtain more peers.
@@ -150,17 +151,20 @@ func NewDefaultClientConfig() *ClientConfig {
 		HTTPUserAgent:                  DefaultHTTPUserAgent,
 		ExtendedHandshakeClientVersion: "go.torrent dev 20181121",
 		Bep20:                          "-GT0002-",
+		UpnpID:                         "TorrServer",
 		NominalDialTimeout:             20 * time.Second,
 		MinDialTimeout:                 3 * time.Second,
 		EstablishedConnsPerTorrent:     50,
 		HalfOpenConnsPerTorrent:        25,
+		TotalHalfOpenConns:             100,
 		TorrentPeersHighWater:          500,
 		TorrentPeersLowWater:           50,
 		HandshakesTimeout:              4 * time.Second,
 		DhtStartingNodes: func(network string) dht.StartingNodesGetter {
 			return func() ([]dht.Addr, error) { return dht.GlobalBootstrapAddrs(network) }
 		},
-		PeriodicallyAnnounceTorrentsToDht: true,		ListenHost:                     func(string) string { return "" },
+		PeriodicallyAnnounceTorrentsToDht: true,
+		ListenHost: func(string) string { return "" },
 		UploadRateLimiter:              unlimited,
 		DownloadRateLimiter:            unlimited,
 		ConnTracker:                    conntrack.NewInstance(),

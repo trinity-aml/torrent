@@ -1034,6 +1034,12 @@ func (t *Torrent) openNewConns() {
 		if len(t.halfOpen) >= t.maxHalfOpen() {
 			return
 		}
+		if len(t.cl.dialers) == 0 {
+			return
+		}
+		if t.cl.numHalfOpen >= t.cl.config.TotalHalfOpenConns {
+			return
+		}
 		p := t.peers.PopMax()
 		t.initiateConn(p)
 	}
@@ -1719,6 +1725,7 @@ func (t *Torrent) initiateConn(peer Peer) {
 	if t.addrActive(addr.String()) {
 		return
 	}
+	t.cl.numHalfOpen++
 	t.halfOpen[addr.String()] = peer
 	go t.cl.outgoingConnection(t, addr, peer.Source)
 }
