@@ -1058,14 +1058,15 @@ func (t *Torrent) putPieceInclination(pi []int) {
 }
 
 func (t *Torrent) updatePieceCompletion(piece pieceIndex) bool {
-	pcu := t.pieceCompleteUncached(piece)
 	p := &t.pieces[piece]
-	changed := t.completedPieces.Get(bitmap.BitIndex(piece)) != pcu.Complete || p.storageCompletionOk != pcu.Ok
-	// log.Fmsg("piece %d completion: %v", piece, pcu.Ok).AddValue(debugLogValue).Log(t.logger)
-	p.storageCompletionOk = pcu.Ok
-	t.completedPieces.Set(bitmap.BitIndex(piece), pcu.Complete)
-	t.tickleReaders()
-	// t.logger.Printf("piece %d uncached completion: %v", piece, pcu.Complete)
+	uncached := t.pieceCompleteUncached(piece)
+	complete := uncached.Complete
+	changed := t.completedPieces.Get(bitmap.BitIndex(piece)) != complete || p.storageCompletionOk != uncached.Ok
+	// log.Fmsg("piece %d completion: %v", piece, uncached.Ok).AddValue(debugLogValue).Log(t.logger)
+	p.storageCompletionOk = uncached.Ok
+	t.completedPieces.Set(bitmap.BitIndex(piece), complete)
+	// t.tickleReaders()
+	// t.logger.Printf("piece %d uncached completion: %v", piece, complete)
 	// t.logger.Printf("piece %d changed: %v", piece, changed)
 	if changed {
 		t.pieceCompletionChanged(piece)
