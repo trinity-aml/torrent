@@ -996,7 +996,7 @@ func (t *Torrent) pendRequest(req request) {
 }
 
 func (t *Torrent) pieceCompletionChanged(piece pieceIndex) {
-	// log.Call().Add("piece", piece).AddValue(debugLogValue).Log(t.logger)
+	t.tickleReaders()
 	t.cl.event.Broadcast()
 	if t.pieceComplete(piece) {
 		t.onPieceCompleted(piece)
