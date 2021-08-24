@@ -1063,11 +1063,11 @@ func (t *Torrent) updatePieceCompletion(piece pieceIndex) bool {
 	cached := p.completion()
 	complete := uncached.Complete
 	changed := t.completedPieces.Get(bitmap.BitIndex(piece)) != complete || p.storageCompletionOk != uncached.Ok
-	log.Fmsg("piece %d completion: %v", piece, uncached.Ok).SetLevel(log.Debug).Log(t.logger)
+	log.Fmsg("piece %d uncached.Ok: %v complete: %v", piece, uncached.Ok, complete).SetLevel(log.Debug).Log(t.logger)
 	p.storageCompletionOk = uncached.Ok
 	t.completedPieces.Set(bitmap.BitIndex(piece), complete)
 	// t.tickleReaders()
-	t.logger.Printf("piece %d uncached completion: %v", piece, complete)
+	//t.logger.Printf("piece %d uncached completion: %v", piece, complete)
 	t.logger.Printf("piece %d changed: %v", piece, changed)
 	if changed {
 		log.Fstr("piece %d completion changed: %+v -> %+v", piece, cached, uncached).SetLevel(log.Debug).Log(t.logger)
