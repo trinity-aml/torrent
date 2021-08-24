@@ -7,6 +7,7 @@ require (
 	github.com/anacrolix/log v0.9.0
 	github.com/anacrolix/missinggo v1.2.1
 	github.com/anacrolix/missinggo/perf v1.0.0
+	github.com/anacrolix/missinggo/v2 v2.5.1-0.20210520011502-b3d95d6b1d02
 	github.com/anacrolix/sync v0.3.0
 	github.com/anacrolix/upnp v0.1.2-0.20200416075019-5e9378ed1425
 	github.com/anacrolix/utp v0.1.0
@@ -26,7 +27,6 @@ require (
 	github.com/RoaringBitmap/roaring v0.6.0 // indirect
 	github.com/anacrolix/chansync v0.0.0-20210524073341-a336ebc2de92 // indirect
 	github.com/anacrolix/confluence v1.7.1-0.20210311004351-d642adb8546c // indirect
-	github.com/anacrolix/missinggo/v2 v2.5.1-0.20210520011502-b3d95d6b1d02 // indirect
 	github.com/anacrolix/multiless v0.1.1-0.20210529082330-de2f6cf29619 // indirect
 	github.com/anacrolix/stm v0.3.0-alpha // indirect
 	github.com/benbjohnson/immutable v0.3.0 // indirect
