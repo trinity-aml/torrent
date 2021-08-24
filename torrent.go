@@ -1556,7 +1556,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 		if correct {
 			pieceHashedCorrect.Add(1)
 		} else {
-			log.Fmsg("piece failed hash: %d connections contributed", len(touchers)).AddValues(t, p).SetLevel(log.Debug).Log(t.logger)
+			log.Fmsg("piece %d failed hash: %d connections contributed", piece, len(touchers)).AddValues(t, p).SetLevel(log.Error).Log(t.logger)
 			pieceHashedNotCorrect.Add(1)
 		}
 	}
