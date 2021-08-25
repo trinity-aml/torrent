@@ -1345,23 +1345,6 @@ func (t *Torrent) consumeDhtAnnouncePeers(pvs <-chan dht.PeersValues) {
 	}
 }
 
-//func (t *Torrent) announceToDht(impliedPort bool, s DhtServer) error {  
-//	ps, err := s.Announce(t.infoHash, t.cl.incomingPeerPort(), impliedPort)  
-//	if err != nil {  
-//		return err  
-//	}  
-//	go func() {  
-//		t.consumeDhtAnnouncePeers(ps.Peers)  
-//	}() // TODO: CHECK THIS  
-//	select {  
-//	  case <-t.closed.LockedChan(t.cl.locker()):  
-//	  case <-time.After(5 * time.Minute):  
-//	}  
-//	ps.Close()  
-//	return nil  
-//}  
-
-
 // Announce using the provided DHT server. Peers are consumed automatically. done is closed when the
 // announce ends. stop will force the announce to end.
 func (t *Torrent) AnnounceToDht(s DhtServer) (done <-chan struct{}, stop func(), err error) {
@@ -1403,7 +1386,6 @@ func (t *Torrent) dhtAnnouncer(s DhtServer) {
 		cl.lock()
 		t.numDHTAnnounces++
 		cl.unlock()
-		//err := t.announceToDht(true, s)
 		err := t.announceToDht(s)
 		if err != nil {
 			t.logger.WithDefaultLevel(log.Warning).Printf("error announcing %q to DHT: %s", t, err)
@@ -1556,7 +1538,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 		if correct {
 			pieceHashedCorrect.Add(1)
 		} else {
-			log.Fmsg("piece %d failed hash: %d connections contributed", piece, len(touchers)).AddValues(t, p).SetLevel(log.Error).Log(t.logger)
+			log.Fmsg("piece %d failed hash: %d connections contributed", piece, len(touchers)).AddValues(t, p).SetLevel(log.Warning).Log(t.logger)
 			pieceHashedNotCorrect.Add(1)
 		}
 	}
@@ -1571,7 +1553,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 		}
 		err := p.Storage().MarkComplete()
 		if err != nil {
-			t.logger.Printf("%T: error marking piece complete %d: %s", t.storage, piece, err)
+			t.logger.WithDefaultLevel(log.Warning).Printf("%T: error marking piece complete %d: %s", t.storage, piece, err)
 		}
 	} else {
 		if len(touchers) != 0 {

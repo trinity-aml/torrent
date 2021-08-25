@@ -1197,7 +1197,7 @@ func (cl *Client) AddDHTNodes(nodes []string) {
 }
 
 func (cl *Client) banPeerIP(ip net.IP) {
-	cl.logger.Printf("banning ip %v", ip)
+	cl.logger.WithDefaultLevel(log.Warning).Printf("banning ip %v", ip)
 	if cl.badPeerIPs == nil {
 		cl.badPeerIPs = make(map[string]struct{})
 	}
