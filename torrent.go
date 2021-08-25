@@ -1571,7 +1571,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 				}())
 			}
 			c := touchers[0]
-			t.cl.banPeerIP(c.remoteAddr.IP)
+			//t.cl.banPeerIP(c.remoteAddr.IP) // FIXME!
 			c.Drop()
 		}
 		t.onIncompletePiece(piece)
