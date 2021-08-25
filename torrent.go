@@ -1066,7 +1066,7 @@ func (t *Torrent) updatePieceCompletion(piece pieceIndex) bool {
 	//log.Fmsg("piece %d uncached ok: %v complete: %v", piece, uncached.Ok, complete).SetLevel(log.Debug).Log(t.logger)
 	p.storageCompletionOk = uncached.Ok
 	t.completedPieces.Set(bitmap.BitIndex(piece), complete)
-	t.tickleReaders()
+	//t.tickleReaders() // moved to pieceCompletionChanged
 	//t.logger.Printf("piece %d uncached completion: %v", piece, complete)
 	//t.logger.Printf("piece %d changed: %v", piece, changed)
 	if changed {
@@ -1533,8 +1533,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 	p := &t.pieces[piece]
 	touchers := t.reapPieceTouchers(piece)
 	if p.storageCompletionOk {
-		// Don't score the first time a piece is hashed, it could be an
-		// initial check.
+		// Don't score the first time a piece is hashed, it could be an initial check.
 		if correct {
 			pieceHashedCorrect.Add(1)
 		} else {
@@ -1544,8 +1543,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 	}
 	if correct {
 		if len(touchers) != 0 {
-			// Don't increment stats above connection-level for every involved
-			// connection.
+			// Don't increment stats above connection-level for every involved connection.
 			t.allStats((*ConnStats).incrementPiecesDirtiedGood)
 		}
 		for _, c := range touchers {
@@ -1557,8 +1555,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 		}
 	} else {
 		if len(touchers) != 0 {
-			// Don't increment stats above connection-level for every involved
-			// connection.
+			// Don't increment stats above connection-level for every involved connection.
 			t.allStats((*ConnStats).incrementPiecesDirtiedBad)
 			for _, c := range touchers {
 				// Y u do dis peer?!
