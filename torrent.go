@@ -1531,7 +1531,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 		return
 	}
 	p := &t.pieces[piece]
-	touchers := t.ClearPieceTouchers(piece)
+	touchers := t.reapPieceTouchers(piece)
 	if p.storageCompletionOk {
 		// Don't score the first time a piece is hashed, it could be an
 		// initial check.
@@ -1660,7 +1660,7 @@ func (t *Torrent) verifyPiece(piece pieceIndex) {
 
 // Return the connections that touched a piece, and clear the entries while
 // doing it.
-func (t *Torrent) ClearPieceTouchers(piece pieceIndex) (ret []*connection) {
+func (t *Torrent) reapPieceTouchers(piece pieceIndex) (ret []*connection) {
 	for c := range t.pieces[piece].dirtiers {
 		delete(c.peerTouchedPieces, piece)
 		ret = append(ret, c)
