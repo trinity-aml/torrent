@@ -37,7 +37,7 @@ type reader struct {
 	// Adjust the read/seek window to handle Readers locked to File extents and the like.
 	offset, length int64
 	// Ensure operations that change the position are exclusive, like Read() and Seek().
-	opMu sync.Mutex
+//	opMu sync.Mutex
 
 	// Required when modifying pos and readahead, or reading them without opMu.
 	mu        sync.Locker
@@ -79,9 +79,9 @@ func (r *reader) available(off, max int64) (ret int64) {
 		if !ok {
 			break
 		}
-		if !r.responsive && !r.t.pieceComplete(pieceIndex(req.Index)) {
-			break
-		}
+//		if !r.responsive && !r.t.pieceComplete(pieceIndex(req.Index)) {
+//			break
+//		}
 		if !r.t.haveChunk(req) {
 			break
 		}
@@ -140,8 +140,8 @@ func (r *reader) ReadContext(ctx context.Context, b []byte) (n int, err error) {
 	}
 	// Hmmm, if a Read gets stuck, this means you can't change position for other purposes. That
 	// seems reasonable, but unusual.
-	r.opMu.Lock()
-	defer r.opMu.Unlock()
+//	r.opMu.Lock()
+//	defer r.opMu.Unlock()
 	n, err = r.readOnceAt(b, r.pos, &ctxErr)
 	if n == 0 {
 		if err == nil && len(b) > 0 {
@@ -259,8 +259,8 @@ func (r *reader) posChanged() {
 }
 
 func (r *reader) Seek(off int64, whence int) (ret int64, err error) {
-	r.opMu.Lock()
-	defer r.opMu.Unlock()
+//	r.opMu.Lock()
+//	defer r.opMu.Unlock()
 
 	r.mu.Lock()
 	defer r.mu.Unlock()
