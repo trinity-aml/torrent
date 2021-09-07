@@ -8,8 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/anacrolix/missinggo/slices"
+	"golang.org/x/text/encoding/charmap"
 )
 
 // The info dictionary.
@@ -27,6 +29,14 @@ type Info struct {
 // This is a helper that sets Files and Pieces from a root path and its
 // children.
 func (info *Info) BuildFromFilePath(root string) (err error) {
+	// convert cp1251 to UTF-8
+	if !utf8.ValidString(root) {
+		cyrDecoder := charmap.Windows1251.NewDecoder()
+		cPath, err := cyrDecoder.String(root)
+		if err == nil {
+			root = cPath
+		}
+	}
 	info.Name = filepath.Base(root)
 	info.Files = nil
 	err = filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
@@ -40,6 +50,14 @@ func (info *Info) BuildFromFilePath(root string) (err error) {
 			// The root is a file.
 			info.Length = fi.Size()
 			return nil
+		}
+		// convert cp1251 to UTF-8
+		if !utf8.ValidString(path) {
+			cyrDecoder := charmap.Windows1251.NewDecoder()
+			cPath, err := cyrDecoder.String(path)
+			if err == nil {
+				path = cPath
+			}
 		}
 		relPath, err := filepath.Rel(root, path)
 		if err != nil {

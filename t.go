@@ -3,9 +3,11 @@ package torrent
 import (
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/anacrolix/missinggo/pubsub"
 	"github.com/anacrolix/torrent/metainfo"
+	"golang.org/x/text/encoding/charmap"
 )
 
 // The torrent's infohash. This is fixed and cannot change. It uniquely
@@ -118,7 +120,16 @@ func (t *Torrent) SetDisplayName(dn string) {
 // The current working name for the torrent. Either the name in the info dict,
 // or a display name given such as by the dn value in a magnet link, or "".
 func (t *Torrent) Name() string {
-	return t.name()
+	name := t.name()
+	// convert cp1251 to UTF-8
+	if !utf8.ValidString(name) {
+		cyrDecoder := charmap.Windows1251.NewDecoder()
+		cName, err := cyrDecoder.String(name)
+		if err == nil {
+			name = cName
+		}
+	}
+	return name
 }
 
 // The completed length of all the torrent data, in all its files. This is
@@ -188,9 +199,29 @@ func (t *Torrent) initFiles() {
 	var offset int64
 	t.files = new([]*File)
 	for _, fi := range t.info.UpvertedFiles() {
+		name := t.info.Name
+		// convert cp1251 to UTF-8
+		if !utf8.ValidString(name) {
+			cyrDecoder := charmap.Windows1251.NewDecoder()
+			cName, err := cyrDecoder.String(name)
+			if err == nil {
+				name = cName
+			}
+		}
+		path := fi.Path
+		for _, p := range path {
+			// convert cp1251 to UTF-8
+			if !utf8.ValidString(p) {
+				cyrDecoder := charmap.Windows1251.NewDecoder()
+				cPath, err := cyrDecoder.String(p)
+				if err == nil {
+					p = cPath
+				}
+			}
+		}
 		*t.files = append(*t.files, &File{
 			t,
-			strings.Join(append([]string{t.info.Name}, fi.Path...), "/"),
+			strings.Join(append([]string{name}, path...), "/"),
 			offset,
 			fi.Length,
 			fi,
@@ -222,6 +253,14 @@ func (t *Torrent) DownloadAll() {
 
 func (t *Torrent) String() string {
 	s := t.name()
+	// convert cp1251 to UTF-8
+	if !utf8.ValidString(s) {
+		cyrDecoder := charmap.Windows1251.NewDecoder()
+		c, err := cyrDecoder.String(s)
+		if err == nil {
+			s = c
+		}
+	}
 	if s == "" {
 		return t.infoHash.HexString()
 	} else {
