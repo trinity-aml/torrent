@@ -307,11 +307,11 @@ func (cl *Client) NewAnacrolixDhtServer(conn net.PacketConn) (s *dht.Server, err
 			}
 			return cl.config.PublicIp4
 		}(),
-		StartingNodes:      cl.config.DhtStartingNodes(conn.LocalAddr().Network()),
+		StartingNodes: cl.config.DhtStartingNodes(conn.LocalAddr().Network()),
 		//ConnectionTracking: cl.config.ConnTracker,
-		OnQuery:            cl.config.DHTOnQuery,
+		OnQuery: cl.config.DHTOnQuery,
 		//Passive:            true, // TODO
-		Logger:        cl.logger.WithContextText(fmt.Sprintf("dht server on %v", conn.LocalAddr().String())),
+		Logger: cl.logger.WithContextText(fmt.Sprintf("dht server on %v", conn.LocalAddr().String())),
 	}
 	if f := cl.config.ConfigureAnacrolixDhtServer; f != nil {
 		f(&cfg)
@@ -811,7 +811,7 @@ func (cl *Client) runReceivedConn(c *connection) {
 	}
 	t, err := cl.receiveHandshakes(c)
 	if err != nil {
-		log.Fmsg("error receiving handshakes on %v: %s", c, err,).SetLevel(log.Debug).Add("network", c.network,).Log(cl.logger)
+		log.Fmsg("error receiving handshakes on %v: %s", c, err).SetLevel(log.Debug).Add("network", c.network).Log(cl.logger)
 		torrent.Add("error receiving handshake", 1)
 		cl.lock()
 		cl.onBadAccept(c.remoteAddr)
@@ -1232,8 +1232,8 @@ func (cl *Client) onDHTAnnouncePeer(ih metainfo.Hash, ip net.IP, port int, portO
 		return
 	}
 	t.addPeers([]Peer{{
-		IP: ip,
-		Port: port,
+		IP:     ip,
+		Port:   port,
 		Source: peerSourceDHTAnnouncePeer,
 	}})
 }

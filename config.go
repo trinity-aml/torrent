@@ -84,7 +84,7 @@ type ClientConfig struct {
 	DisableIPv4      bool
 	DisableIPv4Peers bool
 	// Perform logging and any other behaviour that will help debug.
-	Debug bool `help:"enable debugging"`
+	Debug  bool `help:"enable debugging"`
 	Logger log.Logger
 
 	// HTTPProxy defines proxy for HTTP requests.
@@ -135,7 +135,6 @@ type ClientConfig struct {
 
 	// OnQuery hook func
 	DHTOnQuery func(query *krpc.Msg, source net.Addr) (propagate bool)
-
 }
 
 func (cfg *ClientConfig) SetListenAddr(addr string) *ClientConfig {
@@ -164,10 +163,10 @@ func NewDefaultClientConfig() *ClientConfig {
 			return func() ([]dht.Addr, error) { return dht.GlobalBootstrapAddrs(network) }
 		},
 		PeriodicallyAnnounceTorrentsToDht: true,
-		ListenHost: func(string) string { return "" },
-		UploadRateLimiter:              unlimited,
-		DownloadRateLimiter:            unlimited,
-		ConnTracker:                    conntrack.NewInstance(),
+		ListenHost:                        func(string) string { return "" },
+		UploadRateLimiter:                 unlimited,
+		DownloadRateLimiter:               unlimited,
+		ConnTracker:                       conntrack.NewInstance(),
 	}
 	cc.ConnTracker.SetNoMaxEntries()
 	cc.ConnTracker.Timeout = func(conntrack.Entry) time.Duration { return 0 }

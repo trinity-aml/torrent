@@ -69,4 +69,3 @@ func (h *Hash) UnmarshalText(b []byte) error {
 func (h Hash) MarshalText() (text []byte, err error) {
 	return []byte(h.HexString()), nil
 }
-
