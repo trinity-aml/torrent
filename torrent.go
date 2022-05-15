@@ -1063,14 +1063,14 @@ func (t *Torrent) updatePieceCompletion(piece pieceIndex) bool {
 	cached := p.completion()
 	complete := uncached.Complete
 	changed := t.completedPieces.Get(bitmap.BitIndex(piece)) != complete || p.storageCompletionOk != uncached.Ok
-	//log.Fmsg("piece %d uncached ok: %v complete: %v", piece, uncached.Ok, complete).SetLevel(log.Debug).Log(t.logger)
+	//log.Fmsg("piece %d uncached ok: %v complete: %v", piece, uncached.Ok, complete).LogLevel(log.Debug, t.logger)
 	p.storageCompletionOk = uncached.Ok
 	t.completedPieces.Set(bitmap.BitIndex(piece), complete)
 	//t.tickleReaders() // moved to pieceCompletionChanged
 	//t.logger.Printf("piece %d uncached completion: %v", piece, complete)
 	//t.logger.Printf("piece %d changed: %v", piece, changed)
 	if changed {
-		log.Fstr("piece %d completion changed: %+v -> %+v", piece, cached, uncached).SetLevel(log.Debug).Log(t.logger)
+		log.Fstr("piece %d completion changed: %+v -> %+v", piece, cached, uncached).LogLevel(log.Debug, t.logger)
 		t.pieceCompletionChanged(piece)
 	}
 	return changed
@@ -1526,7 +1526,7 @@ func (t *Torrent) SetMaxEstablishedConns(max int) (oldMax int) {
 }
 
 func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
-	//log.Fmsg("hashed piece %d", piece).Add("piece", piece).Add("passed", correct).SetLevel(log.Debug).Log(t.logger)
+	//log.Fmsg("hashed piece %d", piece).Add("piece", piece).Add("passed", correct).LogLevel(log.Debug, t.logger)
 	if t.closed.IsSet() {
 		return
 	}
@@ -1537,7 +1537,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 		if correct {
 			pieceHashedCorrect.Add(1)
 		} else {
-			log.Fmsg("piece %d failed hash: %d connections contributed", piece, len(touchers)).AddValues(t, p).SetLevel(log.Warning).Log(t.logger)
+			log.Fmsg("piece %d failed hash: %d connections contributed", piece, len(touchers)).AddValues(t, p).LogLevel(log.Debug, t.logger)
 			pieceHashedNotCorrect.Add(1)
 		}
 	}

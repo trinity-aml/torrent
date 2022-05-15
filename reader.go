@@ -218,9 +218,9 @@ func (r *reader) readOnceAt(b []byte, pos int64, ctxErr *error) (n int, err erro
 		// TODO: Just reset pieces in the readahead window. This might help
 		// prevent thrashing with small caches and file and piece priorities.
 		r.log(log.Fstr("error reading torrent %s piece %d offset %d, %d bytes: %v",
-			r.t.infoHash.HexString(), firstPieceIndex, firstPieceOffset, len(b1), err).SetLevel(log.Debug))
+			r.t.infoHash.HexString(), firstPieceIndex, firstPieceOffset, len(b1), err))
 		if !r.t.updatePieceCompletion(firstPieceIndex) {
-			r.log(log.Fstr("piece %d completion unchanged", firstPieceIndex).SetLevel(log.Debug))
+			r.log(log.Fstr("piece %d completion unchanged", firstPieceIndex))
 		}
 		// Update the rest of the piece completions in the readahead window, without alerting to
 		// changes (since only the first piece, the one above, could have generated the read error
@@ -275,5 +275,5 @@ func (r *reader) Seek(off int64, whence int) (ret int64, err error) {
 }
 
 func (r *reader) log(m log.Msg) {
-	r.t.logger.Log(m.Skip(1))
+	r.t.logger.LogLevel(log.Debug, m.Skip(1))
 }
