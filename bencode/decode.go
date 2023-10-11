@@ -439,7 +439,6 @@ func (d *Decoder) readOneValue() bool {
 	}
 
 	return true
-
 }
 
 func (d *Decoder) parseUnmarshaler(v reflect.Value) bool {

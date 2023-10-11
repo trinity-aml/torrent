@@ -46,9 +46,7 @@ const (
 	Stopped                 // The local peer is leaving the swarm.
 )
 
-var (
-	ErrBadScheme = errors.New("unknown scheme")
-)
+var ErrBadScheme = errors.New("unknown scheme")
 
 type Announce struct {
 	TrackerUrl string

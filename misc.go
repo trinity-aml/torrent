@@ -54,7 +54,8 @@ func metadataPieceSize(totalSize int, piece int) int {
 
 // Return the request that would include the given offset into the torrent data.
 func torrentOffsetRequest(torrentLength, pieceSize, chunkSize, offset int64) (
-	r request, ok bool) {
+	r request, ok bool,
+) {
 	if offset < 0 || offset >= torrentLength {
 		return
 	}
@@ -111,7 +112,8 @@ func connLessTrusted(l, r *connection) bool {
 
 func connIsIpv6(nc interface {
 	LocalAddr() net.Addr
-}) bool {
+},
+) bool {
 	ra := nc.LocalAddr()
 	rip := missinggo.AddrIP(ra)
 	return rip.To4() == nil && rip.To16() != nil

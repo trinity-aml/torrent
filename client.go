@@ -302,9 +302,9 @@ func (cl *Client) NewAnacrolixDhtServer(conn net.PacketConn) (s *dht.Server, err
 			return cl.config.PublicIp4
 		}(),
 		StartingNodes: cl.config.DhtStartingNodes(conn.LocalAddr().Network()),
-		//ConnectionTracking: cl.config.ConnTracker,
+		// ConnectionTracking: cl.config.ConnTracker,
 		OnQuery: cl.config.DHTOnQuery,
-		//Passive:            true, // TODO
+		// Passive:            true, // TODO
 		Logger: cl.logger.WithContextText(fmt.Sprintf("dht server on %v", conn.LocalAddr().String())),
 	}
 	if f := cl.config.ConfigureAnacrolixDhtServer; f != nil {
@@ -349,7 +349,7 @@ func (cl *Client) Close() {
 	cl.lock()
 	defer cl.unlock()
 	cl.closed.Set()
-	//cl.eachDhtServer(func(s DhtServer) { s.Close() }) // TODO
+	// cl.eachDhtServer(func(s DhtServer) { s.Close() }) // TODO
 	cl.closeSockets()
 	for _, t := range cl.torrents {
 		t.close()
@@ -1032,7 +1032,7 @@ func (cl *Client) newTorrent(ih metainfo.Hash, specStorage storage.ClientImpl) (
 		},
 		duplicateRequestTimeout: 1 * time.Second,
 	}
-	//t.logger = cl.logger.Clone().AddValue(t)
+	// t.logger = cl.logger.Clone().AddValue(t)
 	t.logger = cl.logger.WithContextValue(t)
 	t.setChunkSize(defaultChunkSize)
 	return

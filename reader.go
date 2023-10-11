@@ -255,7 +255,6 @@ func (r *reader) posChanged() {
 }
 
 func (r *reader) Seek(off int64, whence int) (ret int64, err error) {
-
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	switch whence {

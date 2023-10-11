@@ -48,7 +48,6 @@ func (f *File) DisplayPath() string {
 		return f.t.info.Name
 	}
 	return strings.Join(fip, "/")
-
 }
 
 // The download status of a piece that comprises part of a File.

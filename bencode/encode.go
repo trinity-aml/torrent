@@ -99,7 +99,6 @@ func (e *Encoder) reflectMarshaler(v reflect.Value) bool {
 var bigIntType = reflect.TypeOf(big.Int{})
 
 func (e *Encoder) reflectValue(v reflect.Value) {
-
 	if e.reflectMarshaler(v) {
 		return
 	}

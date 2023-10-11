@@ -167,7 +167,6 @@ func (t *Torrent) KnownSwarm() (ks []Peer) {
 
 	// Add active peers to the list
 	for conn := range t.conns {
-
 		ks = append(ks, Peer{
 			Id:     conn.PeerID,
 			IP:     conn.remoteAddr.IP,
@@ -1063,12 +1062,12 @@ func (t *Torrent) updatePieceCompletion(piece pieceIndex) bool {
 	cached := p.completion()
 	complete := uncached.Complete
 	changed := t.completedPieces.Get(bitmap.BitIndex(piece)) != complete || p.storageCompletionOk != uncached.Ok
-	//log.Fmsg("piece %d uncached ok: %v complete: %v", piece, uncached.Ok, complete).LogLevel(log.Debug, t.logger)
+	// log.Fmsg("piece %d uncached ok: %v complete: %v", piece, uncached.Ok, complete).LogLevel(log.Debug, t.logger)
 	p.storageCompletionOk = uncached.Ok
 	t.completedPieces.Set(bitmap.BitIndex(piece), complete)
-	//t.tickleReaders() // moved to pieceCompletionChanged
-	//t.logger.Printf("piece %d uncached completion: %v", piece, complete)
-	//t.logger.Printf("piece %d changed: %v", piece, changed)
+	// t.tickleReaders() // moved to pieceCompletionChanged
+	// t.logger.Printf("piece %d uncached completion: %v", piece, complete)
+	// t.logger.Printf("piece %d changed: %v", piece, changed)
 	if changed {
 		log.Fstr("piece %d completion changed: %+v -> %+v", piece, cached, uncached).LogLevel(log.Debug, t.logger)
 		t.pieceCompletionChanged(piece)
@@ -1526,7 +1525,7 @@ func (t *Torrent) SetMaxEstablishedConns(max int) (oldMax int) {
 }
 
 func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
-	//log.Fmsg("hashed piece %d", piece).Add("piece", piece).Add("passed", correct).LogLevel(log.Debug, t.logger)
+	// log.Fmsg("hashed piece %d", piece).Add("piece", piece).Add("passed", correct).LogLevel(log.Debug, t.logger)
 	if t.closed.IsSet() {
 		return
 	}
@@ -1571,7 +1570,7 @@ func (t *Torrent) pieceHashed(piece pieceIndex, correct bool) {
 				}())
 			}
 			c := touchers[0]
-			//t.cl.banPeerIP(c.remoteAddr.IP) // FIXME!
+			// t.cl.banPeerIP(c.remoteAddr.IP) // FIXME!
 			c.Drop()
 		}
 		t.onIncompletePiece(piece)
