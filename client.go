@@ -527,7 +527,7 @@ func (cl *Client) dialFirst(ctx context.Context, addr string) dialResult {
 				go func() {
 					cte := cl.config.ConnTracker.Wait(
 						ctx,
-						conntrack.Entry{network, s.Addr().String(), addr},
+						conntrack.Entry{Protocol: network, LocalAddr: s.Addr().String(), RemoteAddr: addr},
 						"dial torrent client",
 						0,
 					)
@@ -864,7 +864,7 @@ func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
 		torrent.Add("completed handshake over ipv6", 1)
 	}
 	if err := t.addConnection(c); err != nil {
-		fmt.Errorf("adding connection: %w", err)
+		cl.logger.Printf("error %s", fmt.Errorf("adding connection: %w", err))
 		return
 	}
 	defer t.dropConnection(c)
@@ -872,7 +872,7 @@ func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
 	cl.sendInitialMessages(c, t)
 	err := c.mainReadLoop()
 	if err != nil && cl.config.Debug {
-		fmt.Errorf("main read loop: %w", err)
+		cl.logger.Printf("error %s", fmt.Errorf("main read loop: %w", err))
 		return
 	}
 }
@@ -1296,7 +1296,7 @@ func (cl *Client) findListenerIp(f func(net.IP) bool) net.IP {
 
 // Our IP as a peer should see it.
 func (cl *Client) publicAddr(peer net.IP) IpPort {
-	return IpPort{cl.publicIp(peer), uint16(cl.incomingPeerPort())}
+	return IpPort{IP: cl.publicIp(peer), Port: uint16(cl.incomingPeerPort())}
 }
 
 func (cl *Client) ListenAddrs() (ret []net.Addr) {
