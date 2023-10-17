@@ -1337,9 +1337,9 @@ func (c *connection) receiveChunk(msg *pp.Message) error {
 
 	if err != nil {
 		panic(fmt.Sprintf("error writing chunk: %v", err))
-		t.pendRequest(req)
-		t.updatePieceCompletion(pieceIndex(msg.Index))
-		return nil
+		// t.pendRequest(req)
+		// t.updatePieceCompletion(pieceIndex(msg.Index))
+		// return nil
 	}
 
 	// It's important that the piece is potentially queued before we check if
