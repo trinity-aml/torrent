@@ -1,19 +1,18 @@
 package torrent
 
 import (
-	"strings"
-
 	"github.com/anacrolix/torrent/metainfo"
 )
 
 // Provides access to regions of torrent data that correspond to its files.
 type File struct {
-	t      *Torrent
-	path   string
-	offset int64
-	length int64
-	fi     metainfo.FileInfo
-	prio   piecePriority
+	t           *Torrent
+	path        string
+	offset      int64
+	length      int64
+	fi          metainfo.FileInfo
+	displayPath string
+	prio        piecePriority
 }
 
 func (f *File) Torrent() *Torrent {
@@ -41,13 +40,9 @@ func (f *File) Length() int64 {
 }
 
 // The relative file path for a multi-file torrent, and the torrent name for a
-// single-file torrent.
+// single-file torrent. Dir separators are '/'.
 func (f *File) DisplayPath() string {
-	fip := f.FileInfo().Path
-	if len(fip) == 0 {
-		return f.t.info.Name
-	}
-	return strings.Join(fip, "/")
+	return f.displayPath
 }
 
 // The download status of a piece that comprises part of a File.

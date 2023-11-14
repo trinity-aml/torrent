@@ -442,9 +442,12 @@ func (t *Torrent) name() string {
 	t.nameMu.RLock()
 	defer t.nameMu.RUnlock()
 	if t.haveInfo() {
-		return t.info.Name
+		return t.info.BestName()
 	}
+	if t.displayName != "" {
 	return t.displayName
+	}
+	return "infohash:" + t.infoHash.HexString()
 }
 
 func (t *Torrent) pieceState(index pieceIndex) (ret PieceState) {

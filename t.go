@@ -3,11 +3,9 @@ package torrent
 import (
 	"strconv"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/anacrolix/missinggo/pubsub"
 	"github.com/anacrolix/torrent/metainfo"
-	"golang.org/x/text/encoding/charmap"
 )
 
 // The torrent's infohash. This is fixed and cannot change. It uniquely
@@ -106,30 +104,20 @@ func (t *Torrent) Seeding() bool {
 	return t.seeding()
 }
 
-// Clobbers the torrent display name. The display name is used as the torrent
-// name if the metainfo is not available.
+// Clobbers the torrent display name if metainfo is unavailable.
+// The display name is used as the torrent name while the metainfo is unavailable.
 func (t *Torrent) SetDisplayName(dn string) {
 	t.nameMu.Lock()
-	defer t.nameMu.Unlock()
-	if t.haveInfo() {
-		return
+	if !t.haveInfo() {
+		t.displayName = dn
 	}
-	t.displayName = dn
+	t.nameMu.Unlock()
 }
 
 // The current working name for the torrent. Either the name in the info dict,
 // or a display name given such as by the dn value in a magnet link, or "".
 func (t *Torrent) Name() string {
-	name := t.name()
-	// convert cp1251 to UTF-8
-	if !utf8.ValidString(name) {
-		cyrDecoder := charmap.Windows1251.NewDecoder()
-		cName, err := cyrDecoder.String(name)
-		if err == nil {
-			name = cName
-		}
-	}
-	return name
+	return t.name()
 }
 
 // The completed length of all the torrent data, in all its files. This is
@@ -199,32 +187,13 @@ func (t *Torrent) initFiles() {
 	var offset int64
 	t.files = new([]*File)
 	for _, fi := range t.info.UpvertedFiles() {
-		name := t.info.Name
-		// convert cp1251 to UTF-8
-		if !utf8.ValidString(name) {
-			cyrDecoder := charmap.Windows1251.NewDecoder()
-			cName, err := cyrDecoder.String(name)
-			if err == nil {
-				name = cName
-			}
-		}
-		path := fi.Path
-		for _, p := range path {
-			// convert cp1251 to UTF-8
-			if !utf8.ValidString(p) {
-				cyrDecoder := charmap.Windows1251.NewDecoder()
-				cPath, err := cyrDecoder.String(p)
-				if err == nil {
-					p = cPath
-				}
-			}
-		}
 		*t.files = append(*t.files, &File{
 			t,
-			strings.Join(append([]string{name}, path...), "/"),
+			strings.Join(append([]string{t.info.BestName()}, fi.BestPath()...), "/"),
 			offset,
 			fi.Length,
 			fi,
+			fi.DisplayPath(t.info),
 			PiecePriorityNone,
 		})
 		offset += fi.Length
@@ -252,14 +221,6 @@ func (t *Torrent) DownloadAll() {
 
 func (t *Torrent) String() string {
 	s := t.name()
-	// convert cp1251 to UTF-8
-	if !utf8.ValidString(s) {
-		cyrDecoder := charmap.Windows1251.NewDecoder()
-		c, err := cyrDecoder.String(s)
-		if err == nil {
-			s = c
-		}
-	}
 	if s == "" {
 		return t.infoHash.HexString()
 	} else {
