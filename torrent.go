@@ -445,7 +445,7 @@ func (t *Torrent) name() string {
 		return t.info.BestName()
 	}
 	if t.displayName != "" {
-	return t.displayName
+		return t.displayName
 	}
 	return "infohash:" + t.infoHash.HexString()
 }

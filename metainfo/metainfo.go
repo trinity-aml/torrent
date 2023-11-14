@@ -18,10 +18,10 @@ type MetaInfo struct {
 	// Where's this specified? Mentioned at
 	// https://wiki.theory.org/index.php/BitTorrentSpecification: (optional) the creation time of
 	// the torrent, in standard UNIX epoch format (integer, seconds since 1-Jan-1970 00:00:00 UTC)
-	CreationDate int64         `bencode:"creation date,omitempty,ignore_unmarshal_type_error"`
-	Comment      string        `bencode:"comment,omitempty"`
-	CreatedBy    string        `bencode:"created by,omitempty"`
-	Encoding     string        `bencode:"encoding,omitempty"`
+	CreationDate int64   `bencode:"creation date,omitempty,ignore_unmarshal_type_error"`
+	Comment      string  `bencode:"comment,omitempty"`
+	CreatedBy    string  `bencode:"created by,omitempty"`
+	Encoding     string  `bencode:"encoding,omitempty"`
 	UrlList      UrlList `bencode:"url-list,omitempty"` // BEP 19 WebSeeds
 }
 

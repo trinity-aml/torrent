@@ -87,11 +87,11 @@ func parseInfohash(xt string) (ih Hash, err error) {
 	encoded := xt[len(xtPrefix):]
 	decode := func() func(dst, src []byte) (int, error) {
 		switch len(encoded) {
-	case 40:
+		case 40:
 			return hex.Decode
-	case 32:
+		case 32:
 			return base32.StdEncoding.Decode
-	}
+		}
 		return nil
 	}()
 	if decode == nil {
