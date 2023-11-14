@@ -864,7 +864,9 @@ func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
 		torrent.Add("completed handshake over ipv6", 1)
 	}
 	if err := t.addConnection(c); err != nil {
-		cl.logger.Printf("error %s", fmt.Errorf("adding connection: %w", err))
+		if cl.config.Debug {
+			cl.logger.Printf("error %s", fmt.Errorf("adding connection: %w", err))
+		}
 		return
 	}
 	defer t.dropConnection(c)
