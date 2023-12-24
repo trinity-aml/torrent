@@ -315,7 +315,7 @@ func (cl *Client) NewAnacrolixDhtServer(conn net.PacketConn) (s *dht.Server, err
 		go func() {
 			ts, err := s.Bootstrap()
 			if err != nil {
-				cl.logger.Printf("error bootstrapping dht: %s", err)
+				cl.logger.Levelf(log.Error, "error bootstrapping dht: %s", err)
 			}
 			log.Fstr("%v completed bootstrap (%v)", s, ts).AddValues(s, ts).Log(cl.logger)
 		}()
@@ -692,7 +692,7 @@ func (cl *Client) outgoingConnection(t *Torrent, addr IpPort, ps peerSource) {
 	cl.noLongerHalfOpen(t, addr.String())
 	if err != nil {
 		if cl.config.Debug {
-			cl.logger.Printf("error establishing outgoing connection: %s", err)
+			cl.logger.Levelf(log.Error, "error establishing outgoing connection: %s", err)
 		}
 		return
 	}
@@ -865,7 +865,7 @@ func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
 	}
 	if err := t.addConnection(c); err != nil {
 		if cl.config.Debug {
-			cl.logger.Printf("error %s", fmt.Errorf("adding connection: %w", err))
+			cl.logger.Levelf(log.Error, "error %s", fmt.Errorf("adding connection: %w", err))
 		}
 		return
 	}
@@ -874,7 +874,7 @@ func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
 	cl.sendInitialMessages(c, t)
 	err := c.mainReadLoop()
 	if err != nil && cl.config.Debug {
-		cl.logger.Printf("error %s", fmt.Errorf("main read loop: %w", err))
+		cl.logger.Levelf(log.Error, "error %s", fmt.Errorf("main read loop: %w", err))
 		return
 	}
 }
@@ -1193,7 +1193,7 @@ func (cl *Client) AddDHTNodes(nodes []string) {
 		hmp := missinggo.SplitHostMaybePort(n)
 		ip := net.ParseIP(hmp.Host)
 		if ip == nil {
-			cl.logger.Printf("won't add DHT node with bad IP: %q", hmp.Host)
+			cl.logger.Levelf(log.Error, "won't add DHT node with bad IP: %q", hmp.Host)
 			continue
 		}
 		ni := krpc.NodeInfo{
