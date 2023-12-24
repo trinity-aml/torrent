@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/anacrolix/missinggo"
-	"github.com/anacrolix/missinggo/perf"
+	"github.com/anacrolix/missinggo/v2"
+	"github.com/anacrolix/missinggo/v2/perf"
 	"github.com/pkg/errors"
 	"golang.org/x/net/proxy"
 )
