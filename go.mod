@@ -6,6 +6,7 @@ require (
 	github.com/anacrolix/dht/v2 v2.21.1
 	github.com/anacrolix/log v0.15.0
 	github.com/anacrolix/missinggo v1.3.0
+	github.com/anacrolix/missinggo/perf v1.0.0
 	github.com/anacrolix/missinggo/v2 v2.7.3
 	github.com/anacrolix/sync v0.5.1
 	github.com/anacrolix/upnp v0.1.3
@@ -27,7 +28,6 @@ require (
 	github.com/alecthomas/atomic v0.1.0-alpha2 // indirect
 	github.com/anacrolix/chansync v0.4.0 // indirect
 	github.com/anacrolix/generics v0.0.1 // indirect
-	github.com/anacrolix/missinggo/perf v1.0.0 // indirect
 	github.com/anacrolix/multiless v0.3.1-0.20221221005021-2d12701f83f7 // indirect
 	github.com/anacrolix/stm v0.5.0 // indirect
 	github.com/benbjohnson/immutable v0.4.3 // indirect
