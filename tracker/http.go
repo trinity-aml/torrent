@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/anacrolix/dht/v2/krpc"
-	"github.com/anacrolix/missinggo/v2/httptoo"
+	"github.com/anacrolix/missinggo/httptoo"
 	"github.com/anacrolix/torrent/bencode"
 )
 

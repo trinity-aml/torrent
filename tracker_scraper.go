@@ -10,7 +10,7 @@ import (
 
 	"github.com/anacrolix/dht/v2/krpc"
 	"github.com/anacrolix/log"
-	"github.com/anacrolix/missinggo/v2"
+	"github.com/anacrolix/missinggo"
 	"github.com/anacrolix/torrent/tracker"
 )
 

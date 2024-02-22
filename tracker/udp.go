@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/anacrolix/dht/v2/krpc"
-	"github.com/anacrolix/missinggo/v2"
-	"github.com/anacrolix/missinggo/v2/pproffd"
+	"github.com/anacrolix/missinggo"
+	"github.com/anacrolix/missinggo/pproffd"
 	"github.com/pkg/errors"
 )
 

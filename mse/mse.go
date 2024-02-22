@@ -12,12 +12,13 @@ import (
 	"expvar"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"math"
 	"math/big"
 	"strconv"
 	"sync"
 
-	"github.com/anacrolix/missinggo/v2/perf"
+	"github.com/anacrolix/missinggo/perf"
 	"github.com/bradfitz/iter"
 )
 
@@ -405,7 +406,7 @@ func (h *handshake) initerSteps() (ret io.ReadWriter, selected CryptoMethod, err
 	if err != nil {
 		return
 	}
-	_, err = io.CopyN(io.Discard, r, int64(padLen))
+	_, err = io.CopyN(ioutil.Discard, r, int64(padLen))
 	if err != nil {
 		return
 	}
@@ -462,7 +463,7 @@ func (h *handshake) receiverSteps() (ret io.ReadWriter, chosen CryptoMethod, err
 	}
 	cryptoProvidesCount.Add(strconv.FormatUint(uint64(provides), 16), 1)
 	chosen = h.chooseMethod(provides)
-	_, err = io.CopyN(io.Discard, r, int64(padLen))
+	_, err = io.CopyN(ioutil.Discard, r, int64(padLen))
 	if err != nil {
 		return
 	}

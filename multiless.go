@@ -1,6 +1,6 @@
 package torrent
 
-import "github.com/anacrolix/missinggo/v2"
+import "github.com/anacrolix/missinggo"
 
 type (
 	multiLess = missinggo.MultiLess

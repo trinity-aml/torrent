@@ -14,10 +14,10 @@ import (
 	"time"
 
 	//	"github.com/anacrolix/log"
+	"github.com/anacrolix/missinggo"
 	"github.com/anacrolix/missinggo/bitmap"
 	"github.com/anacrolix/missinggo/iter"
-	"github.com/anacrolix/missinggo/v2"
-	"github.com/anacrolix/missinggo/v2/prioritybitmap"
+	"github.com/anacrolix/missinggo/prioritybitmap"
 	"github.com/anacrolix/torrent/bencode"
 	"github.com/anacrolix/torrent/mse"
 	pp "github.com/anacrolix/torrent/peer_protocol"
