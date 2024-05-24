@@ -19,12 +19,12 @@ require (
 	github.com/google/btree v1.1.2
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/net v0.24.0
+	golang.org/x/net v0.25.0
 	golang.org/x/time v0.5.0
 )
 
 require (
-	github.com/RoaringBitmap/roaring v1.9.2 // indirect
+	github.com/RoaringBitmap/roaring v1.9.3 // indirect
 	github.com/alecthomas/atomic v0.1.0-alpha2 // indirect
 	github.com/anacrolix/chansync v0.4.0 // indirect
 	github.com/anacrolix/generics v0.0.1 // indirect
@@ -37,8 +37,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/dnscache v0.0.0-20230804202142-fc85eb664529 // indirect
 	github.com/ryszard/goskiplist v0.0.0-20150312221310-2dfbae5fcf46 // indirect
-	golang.org/x/exp v0.0.0-20240409090435-93d18d7e34b8 // indirect
+	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
