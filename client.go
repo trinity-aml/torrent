@@ -72,6 +72,7 @@ type Client struct {
 	acceptLimiter   map[ipStr]int
 	dialRateLimiter *rate.Limiter
 	numHalfOpen     int
+	upnpMappings    []*upnpMapping
 }
 
 type ipStr string
@@ -344,7 +345,7 @@ func (cl *Client) closeSockets() {
 }
 
 // Stops the client. All connections to peers are closed and all activity will
-// come to a halt.
+// come to a halt. Also clear uPnP port mappings.
 func (cl *Client) Close() {
 	cl.lock()
 	defer cl.unlock()
@@ -354,6 +355,7 @@ func (cl *Client) Close() {
 	for _, t := range cl.torrents {
 		t.close()
 	}
+	cl.clearPortMappings()
 	for _, f := range cl.onClose {
 		f()
 	}
