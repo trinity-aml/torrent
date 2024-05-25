@@ -72,6 +72,7 @@ func (cl *Client) clearPortMappings() {
 	var wg sync.WaitGroup
 	wg.Add(mLen)
 	for _, m := range cl.upnpMappings {
+		m := m // fix var inside goroutine func
 		go func() {
 			defer wg.Done()
 			cl.deletePortMapping(m.d, m.proto, m.externalPort)
