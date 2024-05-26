@@ -703,7 +703,9 @@ func (cl *Client) outgoingConnection(t *Torrent, addr IpPort, ps peerSource) {
 	}
 	defer c.Close()
 	c.Discovery = ps
-	cl.runHandshookConn(c, t)
+	if err := cl.runHandshookConn(c, t); err != nil && cl.config.Debug {
+		cl.logger.Levelf(log.Error, "Outgoing connection error %s", err)
+	}
 }
 
 // The port number for incoming peer connections. 0 if the client isn't
@@ -841,10 +843,13 @@ func (cl *Client) runReceivedConn(c *connection) {
 	torrent.Add("received handshake for loaded torrent", 1)
 	cl.lock()
 	defer cl.unlock()
-	cl.runHandshookConn(c, t)
+
+	if err := cl.runHandshookConn(c, t); err != nil && cl.config.Debug {
+		cl.logger.Levelf(log.Error, "Received connection error %s", err)
+	}
 }
 
-func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
+func (cl *Client) runHandshookConn(c *connection, t *Torrent) error {
 	c.setTorrent(t)
 	if c.PeerID == cl.peerID {
 		if c.outgoing {
@@ -857,7 +862,8 @@ func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
 			// as a doppleganger. Instead, the initiator can record *us* as the
 			// doppleganger.
 		}
-		return
+		cl.logger.Levelf(log.Debug, "local and remote peer ids are the same")
+		return nil
 	}
 	c.conn.SetWriteDeadline(time.Time{})
 	c.r = deadlineReader{c.conn, c.r}
@@ -866,19 +872,16 @@ func (cl *Client) runHandshookConn(c *connection, t *Torrent) {
 		torrent.Add("completed handshake over ipv6", 1)
 	}
 	if err := t.addConnection(c); err != nil {
-		if cl.config.Debug {
-			cl.logger.Levelf(log.Error, "error %s", fmt.Errorf("adding connection: %w", err))
-		}
-		return
+		return fmt.Errorf("adding connection: %w", err)
 	}
 	defer t.dropConnection(c)
 	go c.writer(time.Minute)
 	cl.sendInitialMessages(c, t)
-	err := c.mainReadLoop()
-	if err != nil && cl.config.Debug {
-		cl.logger.Levelf(log.Error, "error %s", fmt.Errorf("main read loop: %w", err))
-		return
+
+	if err := c.mainReadLoop(); err != nil {
+		return fmt.Errorf("main read loop: %w", err)
 	}
+	return nil
 }
 
 // See the order given in Transmission's tr_peerMsgsNew.
